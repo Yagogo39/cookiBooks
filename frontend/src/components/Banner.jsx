@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const slides = [
   {
     id: 1,
-    tag: "DE LOS MAS EXCLUSIVO",
+    tag: "DE LO MÁS EXCLUSIVO",
     tagClass: "bg-purple-500 text-white shadow-lg shadow-purple-500/20",
     title: "Nosotros en\nla luna",
     subtitle: "en CookiBooks Del 1 al 20 de mayo",
@@ -35,7 +35,7 @@ const slides = [
   },
   {
     id: 3,
-    tag: "LO MAS ESPECIAL",
+    tag: "LO MÁS ESPECIAL",
     tagClass: "bg-white/15 text-amber-100 border border-white/30",
     title: "Al final\nmueren los dos",
     subtitle: "Un libro para mentes abiertas",
@@ -53,70 +53,96 @@ const slides = [
 
 export default function HeroBanner() {
   const [active, setActive] = useState(0);
-  const slide = slides[active];
+  const scrollRef = useRef(null);
 
-  // Filtramos los covers que no estén vacíos para evitar errores
-  const validCovers = slide.covers.filter(src => src !== "");
-  const main = validCovers[0];
-  const thumbs = validCovers.slice(1);
+  // Sincronizar los puntos (dots) cuando el usuario desliza con el dedo
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const newIndex = Math.round(scrollLeft / clientWidth);
+      if (newIndex !== active) {
+        setActive(newIndex);
+      }
+    }
+  };
+
+  // Función para cuando haces clic en los puntos
+  const scrollToSlide = (index) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        left: scrollRef.current.clientWidth * index,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
-    <section className={`relative overflow-hidden bg-gradient-to-br ${slide.bgClass} transition-all duration-500`}>
-      <div className="max-w-6xl mx-auto px-6 py-10 pb-14 flex items-center justify-between gap-8">
-
-        {/* Content */}
-        <div className={`flex-1 max-w-lg ${slide.textLight ? "text-amber-100" : "text-stone-900"}`}>
-          <span className={`inline-block px-3 py-1 rounded text-[10px] font-bold tracking-widest uppercase mb-3 ${slide.tagClass}`}>
-            {slide.tag}
-          </span>
-          <h1
-            className="font-serif text-4xl xl:text-5xl font-extrabold italic leading-tight mb-3"
-            style={{ color: slide.accentColor }}
+    <section className="relative w-full overflow-hidden">
+      {/* Contenedor deslizable */}
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+        style={{ scrollBehavior: 'smooth' }}
+      >
+        {slides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`min-w-full snap-start bg-gradient-to-br ${slide.bgClass} transition-all duration-700`}
           >
-            {slide.title.split("\n").map((line, i) => <span key={i}>{line}<br /></span>)}
-          </h1>
-          <p className="text-sm opacity-70 mb-2">{slide.subtitle}</p>
-          <p className="text-sm opacity-85 leading-relaxed mb-6">
-            {slide.cta.split("\n").map((line, i) => <span key={i}>{line}<br /></span>)}
-          </p>
-        </div>
+            <div className="max-w-6xl mx-auto px-6 py-10 pb-20 flex flex-col md:flex-row items-center justify-between gap-10">
 
-        {/* Books Area */}
-        <div className="hidden md:flex items-end gap-4 flex-shrink-0">
-          {/* Main Cover */}
-          <div className="w-44 h-60 rounded-lg overflow-hidden shadow-2xl bg-stone-200 border border-white/10">
-            {main && (
-              <img
-                src={main}
-                alt="Main cover"
-                className="w-full h-full object-cover"
-                key={main} // Fuerza recarga al cambiar de slide
-              />
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          <div className="flex flex-col gap-3 pb-2">
-            {thumbs.map((c, i) => (
-              <div key={`${active}-${i}`} className="w-20 h-28 rounded overflow-hidden shadow-lg bg-stone-200 border border-white/10">
-                <img src={c} alt="Thumbnail" className="w-full h-full object-cover" />
+              {/* Texto */}
+              <div className={`flex-1 max-w-lg text-center md:text-left ${slide.textLight ? "text-amber-100" : "text-stone-900"}`}>
+                <span className={`inline-block px-3 py-1 rounded text-[10px] font-bold tracking-widest uppercase mb-4 ${slide.tagClass}`}>
+                  {slide.tag}
+                </span>
+                <h1
+                  className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold italic leading-tight mb-4"
+                  style={{ color: slide.accentColor }}
+                >
+                  {slide.title.split("\n").map((line, i) => <span key={i}>{line}<br /></span>)}
+                </h1>
+                <p className="text-sm opacity-80 mb-6">{slide.cta}</p>
               </div>
-            ))}
+
+              {/* Libros */}
+              <div className="flex items-end gap-3 flex-shrink-0 scale-90 sm:scale-100 md:scale-110">
+                <div className="w-32 h-48 md:w-44 md:h-60 rounded-lg overflow-hidden shadow-2xl border border-white/10">
+                  <img src={slide.covers[0]} className="w-full h-full object-cover" alt="Cover" />
+                </div>
+                <div className="flex flex-col gap-2 pb-2">
+                  {slide.covers.slice(1, 3).map((c, i) => (
+                    <div key={i} className="w-14 h-20 md:w-20 md:h-28 rounded shadow-lg overflow-hidden border border-white/10">
+                      <img src={c} className="w-full h-full object-cover" alt="Thumb" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
-      {/* Navigation Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      {/* Indicadores (Dots) */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-10">
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => setActive(i)}
-            className={`w-2 h-2 rounded-full border-none transition-all duration-300 ${i === active ? "scale-150" : "bg-black/20"}`}
-            style={i === active ? { background: slide.accentColor } : {}}
+            onClick={() => scrollToSlide(i)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${i === active ? "scale-125 shadow-lg" : "bg-white/30"
+              }`}
+            style={i === active ? { background: slides[active].accentColor } : {}}
           />
         ))}
       </div>
+
+      {/* Estilo para ocultar barra de scroll */}
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </section>
   );
 }

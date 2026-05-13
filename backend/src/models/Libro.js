@@ -24,9 +24,21 @@ const Libro = sequelize.define('Libro', {
     },
     existencias: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
+        validate:{
+            min: 0,
+            esMenorQueMax(value) {
+                if(value > this.stockmaximo) {
+                    throw new Error('Las existencias no pueden superar el stock máximo')
+                }
+            }
+        }
+    },
+stockminimo: {
+        type: DataTypes.INTEGER,
+        defaultValue: 5,
+        validate: { min: 0 }
     }
-    // No definas id_autor aquí, eso se hace en las asociaciones
 }, {
     tableName: 'libros',
     timestamps: false

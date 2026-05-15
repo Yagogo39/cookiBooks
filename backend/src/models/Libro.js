@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
-const Libro = sequelize.define('Libro', {
+const Libro = sequelize.define('Libros', {
     id_libro: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -18,9 +18,14 @@ const Libro = sequelize.define('Libro', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
-    stockminimo: { // Sequelize suele preferir minúsculas si no usas comillas en SQL
+    stockminimo: {
         type: DataTypes.INTEGER,
         defaultValue: 5
+    },
+    imagen_url: {
+    type: DataTypes.STRING(500),
+    allowNull: true, 
+    defaultValue: 'https://via.placeholder.com/150' //! NOTA PARA COOKIE: Esta es una imagen GENERICA
     },
     existencias: {
         type: DataTypes.INTEGER,

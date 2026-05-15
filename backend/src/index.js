@@ -3,7 +3,7 @@ const cors = require('cors');
 const { connectDB, sequelize } = require('./config/db');
 require('dotenv').config();
 
-//? 1. Importar Modelos
+//? 1. Importar Modelos e Importar Rutas
 const Autor = require('./models/Autor');
 const Categoria = require('./models/Categoria');
 const Cliente = require('./models/Cliente');
@@ -12,9 +12,11 @@ const Libro = require('./models/Libro');
 const Pedido = require('./models/pedido'); 
 const LibroCategoria = require('./models/libro_categoria');
 
-//? 2. Relaciones (Corregidas para tu script SQL)
+// Importación de archivos de rutas
+const libroRoutes = require('./routes/libroRoutes');
+const ventaRoutes = require('./routes/ventaRoutes');
 
-// Relaciones 1 a N
+//? 2. Relaciones (Corregidas para tu script SQL)
 Autor.hasMany(Libro, { foreignKey: 'id_autor' });
 Libro.belongsTo(Autor, { foreignKey: 'id_autor' });
 
@@ -24,7 +26,6 @@ Libro.belongsTo(Editorial, { foreignKey: 'id_editorial' });
 Cliente.hasMany(Pedido, { foreignKey: 'id_cliente' });
 Pedido.belongsTo(Cliente, { foreignKey: 'id_cliente' });
 
-//* Relación N a N (La que causaba el error de la columna "id")
 Libro.belongsToMany(Categoria, { 
     through: LibroCategoria, 
     foreignKey: 'id_libro', 
@@ -42,6 +43,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+//? 3. Definición de Rutas (ESTO ES LO QUE FALTABA)
+app.use('/api/libros', libroRoutes);
+app.use('/api/ventas', ventaRoutes);
+
 //? Conexión BD
 connectDB();
 
@@ -50,7 +55,7 @@ sequelize.sync({ force: false, alter: false })
     .then(() => console.log('✅ Tablas sincronizadas con el servidor externo'))
     .catch(err => console.log('❌ Error al sincronizar las tablas:', err.message));
 
-//? Ruta de prueba
+// Ruta de prueba raíz
 app.get('/', (req, res) => {
     res.send('Servidor CokiBooks funcionando... 🍪');
 });

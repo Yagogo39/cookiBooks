@@ -3,7 +3,7 @@ const router = express.Router();
 const { getLibros, createLibro } = require('../controllers/libroController');
 
 //! Endpints
-rputer.get('/', getlibros);
+router.get('/', getLibros);
 router.post('/', createLibro);
 
 module.exports = router;

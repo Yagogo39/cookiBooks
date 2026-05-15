@@ -11,13 +11,13 @@ const Autor = sequelize.define('Autor', {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    apellido: { // Cambié apellido_paterno por apellido para que sea igual a tu SQL
+    apellido: { 
         type: DataTypes.STRING(100),
         allowNull: false
     }
 }, {
-    tableName: 'autor', // Tal cual está en tu script
-    timestamps: false   // Tu script no tiene campos de fecha, así que mejor apágalos
+    tableName: 'autor', 
+    timestamps: false   
 });
 
 module.exports = Autor;

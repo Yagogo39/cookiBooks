@@ -1,14 +1,12 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
-const LibroCategoria = sequelize.define('LibroCategoria', {
-    // Definimos AMBAS como primaryKey para que sea una llave compuesta
-    // y Sequelize no intente inventar una columna "id"
+const LibroCategoria = sequelize.define('Categoria_libro', {
     id_libro: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         references: {
-            model: 'libros', // Nombre de la tabla en SQL
+            model: 'libros',
             key: 'id_libro'
         }
     },
@@ -16,13 +14,13 @@ const LibroCategoria = sequelize.define('LibroCategoria', {
         type: DataTypes.INTEGER,
         primaryKey: true,
         references: {
-            model: 'categoria', // Nombre de la tabla en SQL
+            model: 'categoria', 
             key: 'id_categoria'
         }
     }
 }, {
-    tableName: 'categoria_libro', // El nombre exacto de tu script SQL
-    timestamps: false             // Tu script no tiene createdAt/updatedAt
+    tableName: 'categoria_libro', 
+    timestamps: false             
 });
 
 module.exports = LibroCategoria;

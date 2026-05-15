@@ -1,21 +1,33 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+// models/pedido.js
+const { DataTypes } = require('sequelize'); // Importas los tipos de datos
+const { sequelize } = require('../config/db'); // <--- ESTA ES LA QUE TE FALTA
+
 
 const Pedido = sequelize.define('Pedido', {
-    fecha: {
+    id_pedido: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        field: 'id_pedido'
+    },
+    fechaIncio: { // <-- I mayúscula según el script
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: DataTypes.NOW,
+        field: 'fechaincio' // Postgres lo guarda todo en minúsculas internamente
     },
-    total: {
+    Total: { // <-- T mayúscula según el script
         type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
+        allowNull: false,
+        field: 'total'
     },
-    estado: {
-        type: DataTypes.ENUM('pendiente', 'pagado', 'enviado', 'cancelado'),
-        defaultValue: 'pendiente'
+    id_cliente: {
+        type: DataTypes.INTEGER,
+        field: 'id_cliente'
     }
 }, {
-    tableName: 'pedidos'
+    tableName: 'Pedido',
+    freezeTableName: true,
+    timestamps: false
 });
 
 module.exports = Pedido;
